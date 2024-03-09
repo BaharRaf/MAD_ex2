@@ -9,10 +9,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -38,10 +41,29 @@ class MainActivity : ComponentActivity() {
                         )
                     },
                     bottomBar = {
-                        BottomAppBar() {
-                            // Placeholder for BottomAppBar, you can add items here
+                        BottomAppBar {
+                            BottomNavigation {
+                                BottomNavigationItem(
+                                    icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
+                                    label = { Text("Home") },
+                                    selected = true,
+                                    onClick = { /* Handle click */ }
+                                )
+                                BottomNavigationItem(
+                                    icon = {
+                                        Icon(
+                                            Icons.Filled.Star,
+                                            contentDescription = "Watchlist"
+                                        )
+                                    },
+                                    label = { Text("Watchlist") },
+                                    selected = false,
+                                    onClick = { /* Handle click */ }
+                                )
+                            }
                         }
                     }
+
                 ) { paddingValues ->
                     Surface(
                         modifier = Modifier
@@ -105,7 +127,7 @@ fun MovieCard(movie: Movie) {
                     }
                 }
                 Icon(
-                    imageVector = if (expanded) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown,
+                    imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
                     contentDescription = if (expanded) "Collapse" else "Expand",
                     modifier = Modifier.size(24.dp)
                 )
@@ -113,4 +135,3 @@ fun MovieCard(movie: Movie) {
         }
     }
 }
-
