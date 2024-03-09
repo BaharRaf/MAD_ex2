@@ -12,7 +12,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -21,11 +22,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.example.movieappmad24.models.Movie
 import com.example.movieappmad24.models.getMovies
 import com.example.movieappmad24.ui.theme.MovieAppMAD24Theme
+
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -35,9 +38,11 @@ class MainActivity : ComponentActivity() {
             MovieAppMAD24Theme {
                 Scaffold(
                     topBar = {
-                        TopAppBar(
+                        CenterAlignedTopAppBar(
                             title = { Text("Movie App") },
-                            colors = TopAppBarDefaults.topAppBarColors()
+                            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                                containerColor = Color(0xFFCCC2DC)
+                            )
                         )
                     },
                     bottomBar = {
@@ -91,6 +96,7 @@ fun MovieList(movies: List<Movie>) {
 @Composable
 fun MovieCard(movie: Movie) {
     var expanded by remember { mutableStateOf(false) }
+    var isFavorite by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
@@ -98,38 +104,48 @@ fun MovieCard(movie: Movie) {
             .padding(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { expanded = !expanded }
-                    .padding(8.dp)
-            ) {
-                Image(
-                    painter = rememberImagePainter(data = movie.images.firstOrNull()),
-                    contentDescription = "Movie Image",
-                    modifier = Modifier.size(128.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = movie.title,
-                        style = MaterialTheme.typography.titleMedium
+        Box {
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .clickable { expanded = !expanded }
+                .padding(8.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Image(
+                        painter = rememberImagePainter(data = movie.images.firstOrNull()),
+                        contentDescription = "Movie Image",
+                        modifier = Modifier.size(128.dp)
                     )
-                    AnimatedVisibility(expanded) {
-                        Column {
-                            Text(text = "Director: ${movie.director}")
-                            Text(text = "Year: ${movie.year}")
-                            Text(text = "Plot: ${movie.plot}")
-
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = movie.title,
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                        AnimatedVisibility(visible = expanded) {
+                            Column {
+                                Text(text = "Director: ${movie.director}")
+                                Text(text = "Year: ${movie.year}")
+                                Text(text = "Plot: ${movie.plot}")
+                            }
                         }
                     }
+                    Icon(
+                        imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                        contentDescription = "Toggle Details",
+                        modifier = Modifier.size(24.dp)
+                    )
                 }
+            }
+            IconButton(
+                onClick = { isFavorite = !isFavorite },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .size(48.dp)
+            ) {
                 Icon(
-                    imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-                    contentDescription = if (expanded) "Collapse" else "Expand",
-                    modifier = Modifier.size(24.dp)
+                    imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                    contentDescription = "Toggle Favorite",
+                    tint = if (isFavorite) Color.Red else Color.Gray
                 )
             }
         }
