@@ -28,6 +28,10 @@ import coil.compose.rememberImagePainter
 import com.example.movieappmad24.models.Movie
 import com.example.movieappmad24.models.getMovies
 import com.example.movieappmad24.ui.theme.MovieAppMAD24Theme
+import com.example.movieappmad24.ui.theme.Purple40
+import com.example.movieappmad24.ui.theme.Purple80
+import com.example.movieappmad24.ui.theme.PurpleGrey40
+import com.example.movieappmad24.ui.theme.PurpleGrey80
 
 
 class MainActivity : ComponentActivity() {
@@ -39,42 +43,52 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     topBar = {
                         CenterAlignedTopAppBar(
-                            title = { Text("Movie App") },
+                            title = {
+                                Text(
+                                "Movie App",
+                                     color = Purple40 // Font color for title
+                            ) },
                             colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                                containerColor = Color(0xFFCCC2DC)
+                                containerColor = Purple80
                             )
                         )
                     },
                     bottomBar = {
-                        BottomAppBar {
-                            BottomNavigation {
+                        BottomAppBar(containerColor = PurpleGrey80) {
+                            BottomNavigation(
+                                backgroundColor = PurpleGrey80,
+                                contentColor = PurpleGrey40
+                            ) {
                                 BottomNavigationItem(
-                                    icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
-                                    label = { Text("Home") },
+                                    icon = { Icon(Icons.Filled.Home, contentDescription = "Home", tint = PurpleGrey40) },
+                                    label = {
+                                        Text(
+                                            "Home",
+                                            color = PurpleGrey40 // Font color for label
+                                        )
+                                    },
                                     selected = true,
                                     onClick = { /* Handle click */ }
                                 )
                                 BottomNavigationItem(
-                                    icon = {
-                                        Icon(
-                                            Icons.Filled.Star,
-                                            contentDescription = "Watchlist"
+                                    icon = { Icon(Icons.Filled.Star, contentDescription = "Watchlist", tint = PurpleGrey40) },
+                                    label = {
+                                        Text(
+                                            "Watchlist",
+                                            color = PurpleGrey40 // Font color for label
                                         )
                                     },
-                                    label = { Text("Watchlist") },
                                     selected = false,
                                     onClick = { /* Handle click */ }
                                 )
                             }
                         }
                     }
-
                 ) { paddingValues ->
                     Surface(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(paddingValues),
-                        color = MaterialTheme.colorScheme.background
+                            .padding(paddingValues)
                     ) {
                         MovieList(getMovies())
                     }
