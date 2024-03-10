@@ -116,6 +116,7 @@ fun MovieCard(movie: Movie) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
+        colors = CardDefaults.cardColors(containerColor = PurpleGrey80), // Movie box background
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Box {
