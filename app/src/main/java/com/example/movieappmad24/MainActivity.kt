@@ -139,8 +139,17 @@ fun MovieCard(movie: Movie) {
                         AnimatedVisibility(visible = expanded) {
                             Column {
                                 Text(text = "Director: ${movie.director}")
-                                Text(text = "Year: ${movie.year}")
+                                Text(text = "Released: ${movie.year}")
+                                Text(text = "Genre: ${movie.genre}")
+                                Text(text = "Actors: ${movie.actors}")
+                                Text(text = "Rating: ${movie.rating}")
+                                // Divider before the plot
+                                Divider(
+                                    color = PurpleGrey40, // Set divider color
+                                    modifier = Modifier.padding(vertical = 4.dp)
+                                )
                                 Text(text = "Plot: ${movie.plot}")
+
                             }
                         }
                     }
