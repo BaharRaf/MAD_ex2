@@ -23,6 +23,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.example.movieappmad24.models.Movie
@@ -45,9 +46,9 @@ class MainActivity : ComponentActivity() {
                         CenterAlignedTopAppBar(
                             title = {
                                 Text(
-                                "Movie App",
-                                     color = Purple40 // Font color for title
-                            ) },
+                                    "Movie App",
+                                    color = Purple40 // Font color for title
+                                ) },
                             colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                                 containerColor = Purple80
                             )
@@ -119,58 +120,71 @@ fun MovieCard(movie: Movie) {
         colors = CardDefaults.cardColors(containerColor = PurpleGrey80), // Movie box background
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Box {
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .clickable { expanded = !expanded }
-                .padding(8.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter = rememberImagePainter(data = movie.images.firstOrNull()),
-                        contentDescription = "Movie Image",
-                        modifier = Modifier.size(128.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = movie.title,
-                            style = MaterialTheme.typography.headlineMedium
-                        )
-                        AnimatedVisibility(visible = expanded) {
-                            Column {
-                                Text(text = "Director: ${movie.director}")
-                                Text(text = "Released: ${movie.year}")
-                                Text(text = "Genre: ${movie.genre}")
-                                Text(text = "Actors: ${movie.actors}")
-                                Text(text = "Rating: ${movie.rating}")
-                                // Divider before the plot
-                                Divider(
-                                    color = PurpleGrey40, // Set divider color
-                                    modifier = Modifier.padding(vertical = 4.dp)
-                                )
-                                Text(text = "Plot: ${movie.plot}")
-
-                            }
-                        }
-                    }
+        Column {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+            ) {
+                Image(
+                    painter = rememberImagePainter(data = movie.images.firstOrNull()),
+                    contentDescription = "Movie Image",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .align(Alignment.TopEnd),
+                    contentScale = ContentScale.Crop // Adjust content scale to ensure proper fitting
+                )
+                IconButton(
+                    onClick = { isFavorite = !isFavorite },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                ) {
                     Icon(
-                        imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-                        contentDescription = "Toggle Details",
-                        modifier = Modifier.size(24.dp)
+                        imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                        contentDescription = "Toggle Favorite",
+                        tint = if (isFavorite) Color.Red else Color.Gray
                     )
                 }
             }
-            IconButton(
-                onClick = { isFavorite = !isFavorite },
+            Row(
                 modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .size(48.dp)
+                    .fillMaxWidth()
+                    .padding(8.dp)
+                    .height(IntrinsicSize.Min),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                    contentDescription = "Toggle Favorite",
-                    tint = if (isFavorite) Color.Red else Color.Gray
+                Text(
+                    text = movie.title,
+                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.weight(1f)
                 )
+                IconButton(
+                    onClick = { expanded = !expanded },
+                    modifier = Modifier.padding(4.dp)
+                ) {
+                    Icon(
+                        imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                        contentDescription = "Toggle Details"
+                    )
+                }
+            }
+            AnimatedVisibility(visible = expanded) {
+                Column(
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Text(text = "Director: ${movie.director}")
+                    Text(text = "Released: ${movie.year}")
+                    Text(text = "Genre: ${movie.genre}")
+                    Text(text = "Actors: ${movie.actors}")
+                    Text(text = "Rating: ${movie.rating}")
+                    // Divider before the plot
+                    Divider(
+                        color = PurpleGrey40, // Set divider color
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                    Text(text = "Plot: ${movie.plot}")
+                }
             }
         }
     }
