@@ -64,7 +64,9 @@ fun MovieRow(movie: Movie, navController: NavController) {
         .clickable {
             // Use the createRoute function from the Screen.DetailScreen object
             navController.navigate(Screen.DetailScreen.createRoute(movie.id))
+
                    },
+
         shape = ShapeDefaults.Large,
         elevation = CardDefaults.cardElevation(10.dp)
     ) {

@@ -69,6 +69,9 @@ dependencies {
 
     // Material 2 components
     implementation ("androidx.compose.material:material")
+    implementation ("androidx.compose.material:material-icons-core: 1.7.0-alpha05")
+    implementation ("androidx.compose.material:material-icons-extended: 1.7.0-alpha05")
+    implementation ("androidx.navigation:navigation-compose:2.4.0-beta01")
     //Navigation
     val nav_version = "2.7.7"
     implementation("androidx.navigation:navigation-compose:$nav_version")
