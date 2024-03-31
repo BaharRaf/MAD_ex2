@@ -51,10 +51,12 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.example.movieappmad24.models.Movie
 import com.example.movieappmad24.models.getMovies
+import com.example.movieappmad24.navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,7 +76,15 @@ fun HomeScreen(navController: NavController) {
                 NavigationBarItem(
                     label = { Text("Home") },
                     selected = true,
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        navController.navigate(Screen.HomeScreen.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
                     icon = { Icon(
                         imageVector = Icons.Filled.Home,
                         contentDescription = "Go to home"
@@ -83,7 +93,15 @@ fun HomeScreen(navController: NavController) {
                 NavigationBarItem(
                     label = { Text("Watchlist") },
                     selected = false,
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        navController.navigate(Screen.WatchlistScreen.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
                     icon = { Icon(
                         imageVector = Icons.Filled.Star,
                         contentDescription = "Go to watchlist"
