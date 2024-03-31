@@ -1,9 +1,11 @@
 package com.example.movieappmad24.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -15,6 +17,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.movieappmad24.models.Movie
 import com.example.movieappmad24.models.getMovies
+import com.example.movieappmad24.navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,18 +58,23 @@ fun TopAppBarWithBackButton(title: String, navController: NavController) {
 
 @Composable
 fun MovieRow(movie: Movie, navController: NavController) {
-    Column(modifier = Modifier.padding(16.dp)) {
-        Image(
-            painter = rememberAsyncImagePainter(model = movie.images.first()),
-            contentDescription = "Main Movie Image",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .height(250.dp)
-                .fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(text = movie.title, style = MaterialTheme.typography.headlineMedium)
-        // You can add more movie details here, like director, actors, etc.
+    Card(modifier = Modifier
+        .fillMaxWidth()
+        .padding(5.dp)
+        .clickable {
+            // Use the createRoute function from the Screen.DetailScreen object
+            navController.navigate(Screen.DetailScreen.createRoute(movie.id))
+                   },
+        shape = ShapeDefaults.Large,
+        elevation = CardDefaults.cardElevation(10.dp)
+    ) {
+        Column {
+
+            MovieCardHeader(imageUrl = movie.images[0])
+
+            MovieDetails(modifier = Modifier.padding(12.dp), movie = movie)
+
+        }
     }
 }
 
