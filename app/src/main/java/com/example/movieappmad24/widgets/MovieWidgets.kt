@@ -58,20 +58,18 @@ import com.example.movieappmad24.viewmodels.MoviesViewModel
 @Composable
 fun MovieList(
     modifier: Modifier,
-    movies: List<Movie> = getMovies(),
+    movies: List<Movie>,
     navController: NavController,
-    viewModel: MoviesViewModel
+    viewModel: MoviesViewModel,
+    onFavoriteClick: (String) -> Unit,
+    onItemClick: (String) -> Unit
 ){
     LazyColumn(modifier = modifier) {
-        items(viewModel.movies) { movie ->
+        items(movies) { movie ->
             MovieRow(
                 movie = movie,
-                onFavoriteClick = {movieId ->
-                    viewModel.toggleFavoriteMovie(movieId)
-                },
-                onItemClick = { movieId ->
-                    navController.navigate(route = Screen.DetailScreen.withId(movieId))
-                }
+                onFavoriteClick = { onFavoriteClick(movie.id) },
+                onItemClick = { onItemClick(movie.id) }
             )
         }
     }
@@ -81,8 +79,8 @@ fun MovieList(
 fun MovieRow(
     modifier: Modifier = Modifier,
     movie: Movie,
-    onFavoriteClick: (String) -> Unit = {},
-    onItemClick: (String) -> Unit = {}
+    onFavoriteClick: (String) -> Unit,
+    onItemClick: (String) -> Unit
 ){
     Card(modifier = modifier
         .fillMaxWidth()

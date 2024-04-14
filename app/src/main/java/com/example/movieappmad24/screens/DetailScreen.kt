@@ -22,25 +22,36 @@ fun DetailScreen(
     navController: NavController,
     moviesViewModel: MoviesViewModel
 ) {
-
-    movieId?.let {
-        val movie = getMovies().filter { movie -> movie.id == movieId }[0]
-
-        Scaffold (
-            topBar = {
-                SimpleTopAppBar(title = movie.title) {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Go back"
-                        )
+    // Use the movieId to get the corresponding movie from the ViewModel
+    movieId?.let { id ->
+        moviesViewModel.movies.find { movie -> movie.id == id }?.let { movie ->
+            Scaffold(
+                topBar = {
+                    SimpleTopAppBar(title = movie.title) {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowBack,
+                                contentDescription = "Go back"
+                            )
+                        }
                     }
                 }
-            }
-        ){ innerPadding ->
-            Column {
-                MovieRow(modifier = Modifier.padding(innerPadding), movie = movie)
-                HorizontalScrollableImageView(movie = movie)
+            ) { innerPadding ->
+                Column {
+                    // Pass the necessary lambda functions
+                    MovieRow(
+                        modifier = Modifier.padding(innerPadding),
+                        movie = movie,
+                        onFavoriteClick = { movieId ->
+                            moviesViewModel.toggleFavoriteMovie(movieId)
+                        },
+                        onItemClick = { movieId ->
+                            // Here, onItemClick could perhaps handle a different navigation or action
+                            // Since it's a detail screen, it might not navigate anywhere.
+                        }
+                    )
+                    HorizontalScrollableImageView(movie = movie)
+                }
             }
         }
     }

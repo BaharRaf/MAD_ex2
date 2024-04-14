@@ -5,6 +5,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import com.example.movieappmad24.navigation.Screen
 import com.example.movieappmad24.viewmodels.MoviesViewModel
 import com.example.movieappmad24.widgets.MovieList
 import com.example.movieappmad24.widgets.SimpleBottomAppBar
@@ -15,21 +16,25 @@ fun HomeScreen(
     navController: NavController,
     moviesViewModel: MoviesViewModel
 ) {
-    Scaffold (
+    Scaffold(
         topBar = {
             SimpleTopAppBar(title = "Movie App")
         },
         bottomBar = {
-            SimpleBottomAppBar(
-                navController = navController
-            )
+            SimpleBottomAppBar(navController = navController)
         }
-    ){ innerPadding ->
+    ) { innerPadding ->
         MovieList(
             modifier = Modifier.padding(innerPadding),
             movies = moviesViewModel.movies,
             navController = navController,
-            viewModel = moviesViewModel
+            viewModel = moviesViewModel,
+            onFavoriteClick = { movieId ->
+                moviesViewModel.toggleFavoriteMovie(movieId)
+            },
+            onItemClick = { movieId ->
+                navController.navigate(Screen.DetailScreen.withId(movieId))
+            }
         )
     }
 }
