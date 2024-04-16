@@ -58,10 +58,6 @@ import com.example.movieappmad24.viewmodels.MoviesViewModel
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.viewinterop.AndroidView
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.ui.PlayerView
-import com.google.android.exoplayer2.upstream.RawResourceDataSource
 import androidx.compose.runtime.*
 
 @Composable
@@ -248,42 +244,4 @@ fun HorizontalScrollableImageView(movie: Movie) {
             }
         }
     }
-}
-@Composable
-fun MovieTrailerPlayer(
-    resources: Resources,
-    trailerName: String,
-    modifier: Modifier = Modifier
-) {
-    // Properly remember and initialize ExoPlayer
-    val context = LocalContext.current
-    val exoPlayer = remember {
-        ExoPlayer.Builder(context).build().also { player ->
-            val rawResId = resources.getIdentifier(trailerName, "raw", context.packageName)
-            val mediaItem = MediaItem.fromUri(RawResourceDataSource.buildRawResourceUri(rawResId))
-            player.setMediaItem(mediaItem)
-            player.prepare()
-        }
-    }
-
-    // Ensure ExoPlayer is released when Composable leaves the composition
-    DisposableEffect(exoPlayer) {
-        onDispose {
-            exoPlayer.release()
-        }
-    }
-
-    // Use AndroidView to place ExoPlayer's PlayerView within Compose UI
-    AndroidView(
-        modifier = modifier,
-        factory = { ctx ->
-            PlayerView(ctx).also { playerView ->
-                playerView.player = exoPlayer
-                playerView.layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                )
-            }
-        }
-    )
 }
