@@ -1,5 +1,6 @@
 package com.example.movieappmad24.widgets
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -51,32 +51,28 @@ import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.example.movieappmad24.models.Movie
+import com.example.movieappmad24.models.getMovies
+import com.example.movieappmad24.navigation.Screen
 import com.example.movieappmad24.viewmodels.MoviesViewModel
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.media3.common.MediaItem
-import androidx.media3.datasource.RawResourceDataSource
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.ui.PlayerView
+
 
 @Composable
 fun MovieList(
     modifier: Modifier,
-    movies: List<Movie>,
+    movies: List<Movie> = getMovies(),
     navController: NavController,
-    viewModel: MoviesViewModel,
-    onFavoriteClick: (String) -> Unit,
-    onItemClick: (String) -> Unit
+    viewModel: MoviesViewModel
 ){
     LazyColumn(modifier = modifier) {
         items(movies) { movie ->
             MovieRow(
                 movie = movie,
-                onFavoriteClick = { onFavoriteClick(movie.id) },
-                onItemClick = { onItemClick(movie.id) }
+                onFavoriteClick = {movieId ->
+                    viewModel.toggleFavoriteMovie(movieId)
+                },
+                onItemClick = { movieId ->
+                    navController.navigate(route = Screen.DetailScreen.withId(movieId))
+                }
             )
         }
     }
@@ -86,8 +82,8 @@ fun MovieList(
 fun MovieRow(
     modifier: Modifier = Modifier,
     movie: Movie,
-    onFavoriteClick: (String) -> Unit,
-    onItemClick: (String) -> Unit
+    onFavoriteClick: (String) -> Unit = {},
+    onItemClick: (String) -> Unit = {}
 ){
     Card(modifier = modifier
         .fillMaxWidth()
@@ -159,7 +155,9 @@ fun FavoriteIcon(
     ){
         Icon(
             modifier = Modifier.clickable {
-                onFavoriteClick() },
+                onFavoriteClick()
+                Log.i("MovieWidget", "icon clicked")
+            },
             tint = MaterialTheme.colorScheme.secondary,
             imageVector =
             if (isFavorite) {
@@ -246,51 +244,4 @@ fun HorizontalScrollableImageView(movie: Movie) {
             }
         }
     }
-}
-@Composable
-fun MovieTrailerPlayer(movieTrailer: String) {
-    val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    val exoPlayer = remember {
-        ExoPlayer.Builder(context).build().also { player ->
-            val mediaItem = MediaItem.fromUri("android.resource://${context.packageName}/$movieTrailer")
-            player.setMediaItem(mediaItem)
-            player.prepare()
-        }
-    }
-
-    DisposableEffect(exoPlayer, lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_RESUME -> exoPlayer.play()
-                Lifecycle.Event.ON_PAUSE -> {
-                    exoPlayer.pause()
-                    exoPlayer.playWhenReady = false
-                }
-                Lifecycle.Event.ON_DESTROY -> exoPlayer.release()
-                else -> {} // Handle all other lifecycle events
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-            exoPlayer.release()
-        }
-    }
-
-    AndroidView(
-        modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(16f / 9f),
-        factory = { context ->
-            PlayerView(context).apply {
-                player = exoPlayer
-            }
-        },
-        update = { view ->
-            view.player = exoPlayer
-        }
-    )
 }

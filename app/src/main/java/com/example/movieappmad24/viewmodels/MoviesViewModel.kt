@@ -1,22 +1,41 @@
 package com.example.movieappmad24.viewmodels
 
-import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.movieappmad24.data.MovieRepository
 import com.example.movieappmad24.models.Movie
-import com.example.movieappmad24.models.getMovies
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 
 // Inherit from ViewModel class
-class `MoviesViewModel` : ViewModel() {
-    private val _movies = getMovies().toMutableStateList()   // get all movies and create a StateHolder from it, so it can be observed by UI
-    val movies: List<Movie>  //  expose previously created list but immutable
-        get() = _movies
+class MoviesViewModel(
+    private val repository: MovieRepository
+) : ViewModel() {
+    private val _movies = MutableStateFlow(listOf<Movie>())
+    val movies: StateFlow<List<Movie>> = _movies.asStateFlow()
 
-    val favoriteMovies: List<Movie>
-        get() = _movies.filter { movie -> movie.isFavorite }
 
-    fun toggleFavoriteMovie(movieId: String) {
-        _movies.find { it.id == movieId }?.let {
-            it.isFavorite = !it.isFavorite
+    init {
+        viewModelScope.launch {
+            repository.getAllMovies().distinctUntilChanged()
+                .collect{ listOfMovies ->
+                    _movies.value = listOfMovies
+                }
         }
     }
+    fun toggleFavoriteMovie(movieId: String) {
+        viewModelScope.launch {
+            val newMovies = _movies.value.map { movie ->
+                if (movie.id == movieId) movie.copy(isFavorite = !movie.isFavorite) else movie
+            }
+            _movies.value = newMovies
+            // Update the database if your architecture requires it
+            newMovies.filter { it.id == movieId }.forEach { repository.updateMovie(it) }
+        }
+    }
+
+
 }

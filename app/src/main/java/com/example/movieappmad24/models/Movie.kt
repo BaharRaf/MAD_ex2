@@ -1,10 +1,13 @@
 package com.example.movieappmad24.models
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
 
+@Entity
 data class Movie(
+    @PrimaryKey(autoGenerate = true)
+    val dbId: Long = 0,
     val id: String,
     val title: String,
     val year: String,
@@ -12,13 +15,12 @@ data class Movie(
     val director: String,
     val actors: String,
     val plot: String,
+    @Ignore
     val images: List<String>,
     val trailer: String,
     val rating: String,
-    val initialIsFavorite: Boolean = false
-) {
-    var isFavorite by mutableStateOf(initialIsFavorite)
-}
+    var isFavorite: Boolean = false
+)
 
 fun getMovies(): List<Movie> {
     return listOf(
@@ -34,7 +36,7 @@ fun getMovies(): List<Movie> {
                 "https://images-na.ssl-images-amazon.com/images/M/MV5BMTY2ODQ3NjMyMl5BMl5BanBnXkFtZTcwODg0MTUzNA@@._V1_SX1777_CR0,0,1777,999_AL_.jpg",
                 "https://images-na.ssl-images-amazon.com/images/M/MV5BMTMxOTEwNDcxN15BMl5BanBnXkFtZTcwOTg0MTUzNA@@._V1_SX1777_CR0,0,1777,999_AL_.jpg",
                 "https://images-na.ssl-images-amazon.com/images/M/MV5BMTYxMDg1Nzk1MV5BMl5BanBnXkFtZTcwMDk0MTUzNA@@._V1_SX1500_CR0,0,1500,999_AL_.jpg"),
-            trailer = "trailer_placeholder",  // Filename without extension
+            trailer = "trailer_placeholder",
             rating = "7.9"),
 
         Movie(id = "tt0416449",
